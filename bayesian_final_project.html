@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Maria Adelia Widijanto">
+
+<title>Bayesian Model Course Final Project</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="bayesian_final_project_files/libs/clipboard/clipboard.min.js"></script>
+<script src="bayesian_final_project_files/libs/quarto-html/quarto.js"></script>
+<script src="bayesian_final_project_files/libs/quarto-html/popper.min.js"></script>
+<script src="bayesian_final_project_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="bayesian_final_project_files/libs/quarto-html/anchor.min.js"></script>
+<link href="bayesian_final_project_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="bayesian_final_project_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="bayesian_final_project_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="bayesian_final_project_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="bayesian_final_project_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="bayesian_final_project_files/libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="bayesian_final_project_files/libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="bayesian_final_project_files/libs/viz-1.8.2/viz.js"></script>
+<link href="bayesian_final_project_files/libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
+<script src="bayesian_final_project_files/libs/grViz-binding-1.0.11/grViz.js"></script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#research-question" id="toc-research-question" class="nav-link" data-scroll-target="#research-question">Research Question</a></li>
+  </ul></li>
+  <li><a href="#model-description" id="toc-model-description" class="nav-link" data-scroll-target="#model-description">Model Description</a>
+  <ul class="collapse">
+  <li><a href="#data-structure" id="toc-data-structure" class="nav-link" data-scroll-target="#data-structure">Data Structure</a></li>
+  <li><a href="#estimating-posterior-distribution-of-transtition-matrix" id="toc-estimating-posterior-distribution-of-transtition-matrix" class="nav-link" data-scroll-target="#estimating-posterior-distribution-of-transtition-matrix">Estimating posterior distribution of transtition matrix</a>
+  <ul class="collapse">
+  <li><a href="#the-priors" id="toc-the-priors" class="nav-link" data-scroll-target="#the-priors">The Priors</a></li>
+  <li><a href="#the-observations" id="toc-the-observations" class="nav-link" data-scroll-target="#the-observations">The Observations</a></li>
+  <li><a href="#the-likelihoods" id="toc-the-likelihoods" class="nav-link" data-scroll-target="#the-likelihoods">The Likelihoods</a></li>
+  <li><a href="#jags-model" id="toc-jags-model" class="nav-link" data-scroll-target="#jags-model">JAGS model</a></li>
+  </ul></li>
+  <li><a href="#estimating-updated-land-cover-with-the-new-transition-matrix" id="toc-estimating-updated-land-cover-with-the-new-transition-matrix" class="nav-link" data-scroll-target="#estimating-updated-land-cover-with-the-new-transition-matrix">Estimating Updated Land Cover with the New Transition Matrix</a></li>
+  <li><a href="#directed-acyclic-graphs-dag" id="toc-directed-acyclic-graphs-dag" class="nav-link" data-scroll-target="#directed-acyclic-graphs-dag">Directed Acyclic Graphs (DAG)</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Bayesian Model Course Final Project</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Maria Adelia Widijanto </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>This document outlines the Bayesian framework described in <strong>Levy et al.&nbsp;(2018), “Estimation of Gross Land-Use Change and Its Uncertainty Using a Bayesian Data Assimilation Approach” (Biogeosciences, 15(5), 1497-1513).</strong> The paper introduces a novel approach for estimating land-use change by addressing the challenge posed by multiple sources of land-use maps of an area. By employing a Bayesian framework, these diverse sources are treated as prior information, which is then assimilated to generate a more refined and cohesive land-use map.</p>
+<p>The Bayesian framework was applied to what the author was referring to <strong>data assimilation</strong>, which defines as “an approach for fusing observations with prior knowledge (e.g.&nbsp;mathematical representations of physical laws; model output) to obtain an estimate of the distribution of the true state of some phenomenon”. In this case, the data assimilation process corresponds with the prior and likelihood development process for the Bayesian framework.</p>
+<section id="research-question" class="level2">
+<h2 class="anchored" data-anchor-id="research-question">Research Question</h2>
+<dl>
+<dt>The research question of this paper is</dt>
+<dd>
+<p>How can a Bayesian hierarchical model be developed and applied to integrate multiple data sources to produce accurate and spatially explicit estimates of land-use change over time?</p>
+</dd>
+</dl>
+<p>In a case study, they applied the approach to Scotland over the period 1969-2015</p>
+</section>
+</section>
+<section id="model-description" class="level1">
+<h1>Model Description</h1>
+<section id="data-structure" class="level2">
+<h2 class="anchored" data-anchor-id="data-structure">Data Structure</h2>
+<p>We begin with historical land use maps, denoted as <span class="math inline">\(\mathbf{U}\)</span>, which represent land use types at each grid location on the map. Each grid location is specified by coordinates <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>, making <span class="math inline">\(\mathbf{U_{xy}}\)</span> a vector that describes land use at a particular location. By utilizing maps from multiple time points, we can construct a land use transition matrix, <span class="math inline">\(\mathbf{B}\)</span>, for each time step <span class="math inline">\(t\)</span>.</p>
+<p>The land use transition matrix <span class="math inline">\(\mathbf{B}\)</span> is defined as:</p>
+<p><span class="math display">\[
+B =
+\begin{bmatrix}
+0 &amp; \beta_{12} &amp; \beta_{13} &amp; \dots &amp; \beta_{1n} \\
+\beta_{21} &amp; 0 &amp; \beta_{23} &amp; \dots &amp; \beta_{2n} \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+\beta_{n1} &amp; \beta_{n2} &amp; \beta_{n3} &amp; \dots &amp; 0
+\end{bmatrix}
+\quad t=1
+\]</span></p>
+<p>This continues for each time step <span class="math inline">\(t\)</span>:</p>
+<p><span class="math display">\[
+\vdots
+\]</span></p>
+<p><span class="math display">\[
+\begin{bmatrix}
+0 &amp; \beta_{12} &amp; \beta_{13} &amp; \dots &amp; \beta_{1n} \\
+\beta_{21} &amp; 0 &amp; \beta_{23} &amp; \dots &amp; \beta_{2n} \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+\beta_{n1} &amp; \beta_{n2} &amp; \beta_{n3} &amp; \dots &amp; 0
+\end{bmatrix}
+\quad t=n_t
+\]</span></p>
+<p>where each <span class="math inline">\(\beta_{ij}\)</span> element represents the area of land use class <span class="math inline">\(i\)</span> (rows) that transitioned to class <span class="math inline">\(j\)</span> (columns) at time step <span class="math inline">\(t\)</span>, measured in square kilometers (km<sup>2</sup>).</p>
+<p>To calculate <span class="math inline">\(\beta_{ijt}\)</span>, we use data from <span class="math inline">\(\mathbf{U_{xy}}\)</span>:</p>
+<p><span class="math display">\[
+\beta_{ijt} = \sum_{x=1}^{n_x} \sum_{y=1}^{n_y} \left[ U_{xyt-1} = i \land U_{xyt} = j \right] l^2 \tag{3}
+\]</span></p>
+<p>where <span class="math inline">\(l\)</span> denotes the grid size of the map. By knowing these variables, we can express the net change in land use <span class="math inline">\(\Delta A_{ut}\)</span> using the net area difference:</p>
+<p><span class="math display">\[
+\Delta A_{ut} = A_{ut} - A_{ut-1} \tag{2}
+\]</span></p>
+<p>Alternatively, we can calculate <span class="math inline">\(\Delta A_{ut}\)</span> using the transition matrix <span class="math inline">\(\mathbf{B}\)</span> by determining the gross gains (column sum vector, <span class="math inline">\(\mathbf{G_t}\)</span>) and the gross losses (row sum vector, <span class="math inline">\(\mathbf{L_t}\)</span>):</p>
+<p><span class="math display">\[
+\Delta A_{ut} = G_{ut} - L_{ut} \tag{4}
+\]</span></p>
+<p>where</p>
+<p><span class="math display">\[
+G_{ut} = \sum_{i=1}^{n_u} \beta_{iut}
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+L_{ut} = \sum_{j=1}^{n_u} \beta_{ujt}
+\]</span></p>
+<p>Knowing the parameters of <span class="math inline">\(\mathbf{U}\)</span>, <span class="math inline">\(\mathbf{B}\)</span>, and <span class="math inline">\(\mathbf{A}\)</span>, the author did two step of methods:</p>
+<ol type="1">
+<li><p>The author first applied the <strong>Bayesian approach</strong> to estimate the parameters in <span class="math inline">\(\mathbf{B}\)</span>. In this framework, we specify prior information about <span class="math inline">\(\mathbf{B}\)</span> and use the likelihood based on partial observations of <span class="math inline">\(\mathbf{U}\)</span> and <span class="math inline">\(\mathbf{A}\)</span>. This results in a posterior distribution for <span class="math inline">\(\mathbf{B}\)</span>.</p></li>
+<li><p>The authors then use this posterior distribution of <span class="math inline">\(\mathbf{B}\)</span> along with a probability weighting matrix <span class="math inline">\(\mathbf{W}\)</span> to conduct a <strong>weighted sampling operation</strong>. This process simulates where land-use changes are likely to occur, generating posterior realizations of <span class="math inline">\(\mathbf{U}\)</span>.</p></li>
+</ol>
+</section>
+<section id="estimating-posterior-distribution-of-transtition-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="estimating-posterior-distribution-of-transtition-matrix">Estimating posterior distribution of transtition matrix</h2>
+<section id="the-priors" class="level3">
+<h3 class="anchored" data-anchor-id="the-priors">The Priors</h3>
+<p>The priors are derived from data provided by the Countryside Survey (CS), which offers direct observations of <span class="math inline">\(\mathbf{B}\)</span> over multiple years. This results in a matrix of <span class="math inline">\(\mathbf{B^{prior}}\)</span>.</p>
+</section>
+<section id="the-observations" class="level3">
+<h3 class="anchored" data-anchor-id="the-observations">The Observations</h3>
+<ol type="1">
+<li><p>The Agricultural Census (AC) provided the total area in the agricultural land use, which is one out of six land use category being analyzed in this paper. This data is then can be used as the <span class="math inline">\(\mathbf{A_{ut}^{obs}}\)</span> . By using the information from <span class="math inline">\(\mathbf{B^{prior}}\)</span> into <span class="math inline">\(Eq. 4\)</span> and combining different <span class="math inline">\(t\)</span> observation years, <span class="math inline">\(\Delta \mathbf{A_{ut}^{obs}}\)</span> could be gained.</p></li>
+<li><p>The EDINA Agricultural Census (EAC) provided the detailed information of the <span class="math inline">\(\mathbf{L_t}\)</span> and <span class="math inline">\(\mathbf{G_t}\)</span>.</p></li>
+<li><p>Using Corine, IACS, and FC maps, <span class="math inline">\(\mathbf{U^{obs}}\)</span> matrices are gained and used as an input for <span class="math inline">\(Eq. 3\)</span>, which resulted in <span class="math inline">\(\mathbf{B_{t}^{obs}}\)</span> as the observed transition matrix for each year.</p></li>
+</ol>
+</section>
+<section id="the-likelihoods" class="level3">
+<h3 class="anchored" data-anchor-id="the-likelihoods">The Likelihoods</h3>
+<p>These multiple data sets were being used by the author to develop each of the likelihood based on the each observation variables.</p>
+<ol type="1">
+<li>Using the <span class="math inline">\(\Delta \mathbf{A_{ut}^{obs}}\)</span> information, <span class="math inline">\(\mathcal{L_{net}}\)</span> was established, which is the likelihood based on the overall area change that follows a normal distribution:</li>
+</ol>
+<p><span class="math display">\[\mathcal{L}_{net} = \prod_{u=1}^{n_u} \prod_{t=1}^{n_t} \frac{1}{\sigma_{ut}\sqrt{2\pi}} \exp \left( -\frac{(\Delta A_{ut}^{obs} - \Delta A_{ut}^{pred})^2}{2 \sigma_{ut}^2} \right) \tag{5}\]</span></p>
+<p>with <span class="math inline">\(\sigma_{ut}\)</span> being the observational error of the data.</p>
+<ol start="2" type="1">
+<li>Using the <span class="math inline">\(\mathbf{G}\)</span> and <span class="math inline">\(\mathbf{L}\)</span>, the likelihood of the gross area change (<span class="math inline">\(\mathcal{L_{gross}})\)</span> can be calculated, however because of the nature of the data, the likelihood distribution is corrected using a skew parameter, making this a skewed normal distribution</li>
+</ol>
+<p><span class="math display">\[\mathcal{L}_{gross} = \prod_{u=1}^{n_u} \prod_{t=1}^{n_t} \frac{2}{\sigma_{L_{ut}}^{obs}} \phi \left( \frac{L_{ut}^{obs} - L_{ut}^{pred}}{\sigma_{L_{ut}}^{obs}} \right)
+\Phi \left( \alpha \frac{L_{ut}^{obs} - L_{ut}^{pred}}{\sigma_{L_{ut}}^{obs}} \right)
+\times \frac{2}{\sigma_{G_{ut}}^{obs}}
+\phi \left( \frac{G_{ut}^{obs} - G_{ut}^{pred}}{\sigma_{G_{ut}}^{obs}} \right)
+\Phi \left( \alpha \frac{G_{ut}^{obs} - G_{ut}^{pred}}{\sigma_{G_{ut}}^{obs}} \right) \tag{6}\]</span></p>
+<p>where <span class="math inline">\(\phi\)</span> is the standard normal probability density function, <span class="math inline">\(\Phi\)</span> is the corresponding cumulative density function, and <span class="math inline">\(\alpha\)</span> is the skew parameter.</p>
+<ol start="3" type="1">
+<li>Using <span class="math inline">\(\mathbf{B_{t}^{obs}}\)</span>, a likelihood of the predicted transition matrix (<span class="math inline">\(\mathcal{L}_{B}\)</span>) can be calculated as follow:</li>
+</ol>
+<p><span class="math display">\[
+\mathcal{L}_{B} = \prod_{i=1}^{n_u} \prod_{j=1}^{n_i} \prod_{t=1}^{n_t} \frac{1}{\sigma_{\beta_{ijt}}^{\text{obs}} \sqrt{2\pi}} \exp \left( -\frac{\left( \beta_{ijt}^{\text{obs}} - \beta_{ijt}^{\text{pred}} \right)^2}{2 \left( \sigma_{\beta_{ijt}}^{\text{obs}} \right)^2} \right) \tag{7}
+\]</span></p>
+</section>
+<section id="jags-model" class="level3">
+<h3 class="anchored" data-anchor-id="jags-model">JAGS model</h3>
+<p>While the authors did not provide any specific code to show the analysis process, they mentioned that they used <code>BayesianTools</code> package instead of running it on <code>rjags</code>. Nevertheless, the simplified <code>rjags</code> model framework would look something like this:</p>
+<div class="cell" data-hash="bayesian_final_project_cache/html/unnamed-chunk-1_f86d0071dc087bd0328abd0602c3a97d">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>model_dummy <span class="ot">&lt;-</span> <span class="st">"</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="st">model{</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="st">### PRIORS ###</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="st"># B_prior represents prior B matrix about land use transitions from the CS data.</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="st">for (i in 1:n_u) { # n_u is the total number of land use classes</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="st">  for (j in 1:n_t) { #n_t is the number of timesteps</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="st">    B[i, j] ~ dnorm(B_prior[i, j], tau_B) # tau_B is the precision (inverse of variance) of the prior distribution (sigma_B^2)</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="st"># sigma_B was calculated using bootstraping approach</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="st">  }</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="st"># Prior for observational error</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="st"># Assuming that the standard deviations are between x1 and x2 which the author did not specifically defined (will be explained in the next part)</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="st"># sigma_A, sigma_L, and sigma_G represent the standard deviation for the observational errors.</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="st">sigma_A ~ dunif(x1, x2)  </span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="st">sigma_L ~ dunif(x1, x2)  </span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="st">sigma_G ~ dunif(x1, x2)</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="st"># each sigma will be used to calculate each tau with tau = 1/sigma^2</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="st">tau_A &lt;- 1/sigma_A</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="st">tau_L &lt;- 1/sigma_L</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="st">tau_G &lt;- 1/sigma_G</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="st">### LIKELIHOOD ###</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="st"># Likelihood for L_net (overall area change)</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="st"># delta_A_obs_ follows a normal distribution centered at ΔA_pred_ut with variance based on sigma_A.</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="st">for (u in 1:n_u) {</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="st">  for (t in 1:n_t) {</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="st">    delta_A_obs[u, t] ~ dnorm(delta_A_pred[u, t], tau_A)</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="st">  }</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="st"># Likelihood for L_gross (gross area change) with skewed normal distribution</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="st"># L_obs_ut and G_obs_ut follow skewed distributions based on parameters sigma_L, sigma_G, and skew parameter alpha.</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="st">for (u in 1:n_u) {</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="st">  for (t in 1:n_t) {</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="st">    L_obs[u, t] ~ dsnorm(L_pred[u, t], tau_L, alpha_L)</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="st">    G_obs[u, t] ~ dsnorm(G_pred[u, t], tau_G, alpha_G)</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="st">  }</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="st"># alpha_L and alpha_G are skewness parameters.</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="st"># Likelihood for L_B (predicted transition matrix)</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="st"># beta_obs_ijt follows a normal distribution centered at beta_pred_ijt with variance based on sigma_B.</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="st">for (i in 1:n_i) { # n_i is the t-1 land use class</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="st">  for (j in 1:n_j) { # n_t is the t land use class</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="st">    for (t in 1:n_t) { # n_t is the time step</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="st">      beta_obs[i, j, t] ~ dnorm(beta_pred[i, j, t], tau_B)</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="st">    }</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="st">  }</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="st"># Unelaborated overall likelihood: summation of each log likelihoods</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="st">  }</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="st">} "</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>The overall likelihood is a sum of the log of each of the likelihoods (equation not elaborated).</p>
+<p>After defining model, we could then continue to fit the model. To simplify the process, the observed data could be a list object that stores the map information (possibly turn them first into matrix format). This list object is named <code>data_input</code> in this example. The information given in the text article is that <em>“nine chains were used, with 100 000 iterations in each. To establish the initial</em> <span class="math inline">\(B\)</span> <em>parameter values for one of the chains, a least-squares fit with the</em> <span class="math inline">\(\Delta{A}\)</span> <em>was used. Other chains were over dispersed by adding random variation to this best-fit parameter set.”</em>.</p>
+<p>Since we have a specific initial values for B, we could define it specifically. But to keep things simple, as the same concept with the inputs, the initial values of the iterations can be defined as stored as a list object which in this case is called <code>inits_list</code>.</p>
+<div class="cell" data-hash="bayesian_final_project_cache/html/unnamed-chunk-2_51a6681030b3e03dfab7ae325deeebed">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rjags)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">jags.model</span>(<span class="fu">textConnection</span>(model_dummy), </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                    <span class="co">#data = data_input, </span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                    <span class="co">#inits = inits_list, </span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                    <span class="at">n.chains =</span> <span class="dv">9</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in jags.model(textConnection(model_dummy), n.chains = 9): 
+Error parsing model file:
+syntax error on line 57 near "}"</code></pre>
+</div>
+</div>
+<p>We then apply the MCMC sampling to the model with 100 000 to establish the posterior distribution of <span class="math inline">\(B^{post}\)</span></p>
+<div class="cell" data-hash="bayesian_final_project_cache/html/unnamed-chunk-3_39445072a709a229ac53b24096d2cb2c">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">&lt;-</span> <span class="fu">coda.samples</span>(model, </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">variable.names =</span> <span class="fu">c</span>(<span class="st">"B_post"</span>), </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">n.iter =</span> <span class="dv">100000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error: object 'model' not found</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Why did the author chose this parameters to run the MCMC?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Note that there are five types of callouts, including: <code>note</code>, <code>warning</code>, <code>important</code>, <code>tip</code>, and <code>caution</code>.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="estimating-updated-land-cover-with-the-new-transition-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="estimating-updated-land-cover-with-the-new-transition-matrix">Estimating Updated Land Cover with the New Transition Matrix</h2>
+<p>After obtaining <span class="math inline">\(\mathbf{B^{post}}\)</span>, the authors had the information of each land use change area allocation from class <span class="math inline">\(i\)</span> to <span class="math inline">\(j\)</span> for each time step <span class="math inline">\(t\)</span> . Using this information, then used the <span class="math inline">\(\mathbf{U^{obs}}\)</span> from <span class="math inline">\(t\)</span> and <span class="math inline">\(t-1\)</span> to allocate cell grids that are being sampled for each transition from <span class="math inline">\(i\)</span> to <span class="math inline">\(j\)</span>. The rule of the sampling is represented as follow:</p>
+<p><span class="math display">\[
+\begin{align*}    W_{xy} &amp;\leftarrow     \begin{cases}        0, &amp; \text{if } U_{xy,t}^{obs} \neq i \\        1, &amp; \text{else}    \end{cases}    \\    W_{xy} &amp;\leftarrow     \begin{cases}        1, &amp; \text{if } U_{xy,t-1}^{obs} = j \\        p_m, &amp; \text{else}    \end{cases}\end{align*}
+\]</span></p>
+<p>with <span class="math inline">\(p_{m}\)</span> being the probability of cells being misclassified in <span class="math inline">\(U^{obs}\)</span> .</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Example of weighted sampling operation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>It is known from the <span class="math inline">\(\mathbf{B^{post}}\)</span> that seven grid cells change from grass to crop from 2014 to 2015. The model selects candidate cells that are crop in 2015, with a higher probability given to the same cells that were grass in 2014. If the posterior estimate <span class="math inline">\(\beta_{ijt}^{post}\)</span> (the predicted area of change from crop to grass) is smaller than the observed value <span class="math inline">\(\beta_{ijt}^{obs}\)</span>, only a subset of the high-probability cells will be selected. The process results in the number of cells that most likely to change are those identified as crops in 2015 and as grass in 2014, based on the weighting criteria <span class="math inline">\(\mathbf{W}\)</span>.</p>
+</div>
+</div>
+<p>The method to conduct weighted sampling is not elaborated in this report, but could be done in R with different packages available.</p>
+</section>
+<section id="directed-acyclic-graphs-dag" class="level2">
+<h2 class="anchored" data-anchor-id="directed-acyclic-graphs-dag">Directed Acyclic Graphs (DAG)</h2>
+<p>The simplified structure of this Bayesian application can be visualized as follow</p>
+<div class="cell" data-hash="bayesian_final_project_cache/html/unnamed-chunk-4_c9852a226a87482fe79e73b729777700">
+<div class="cell-output-display">
+<div class="grViz html-widget html-fill-item" id="htmlwidget-c9a06c9cd7b02f2fdd10" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-c9a06c9cd7b02f2fdd10">{"x":{"diagram":"\n  digraph BayesianLinearModel {\n    graph [layout = dot, rankdir = UD]\n\n    Lt [label = \"Lt\", shape = circle]\n    Gt [label = \"Gt\", shape = circle]\n    At [label = \"At\", shape = circle]\n    Uobs [label = \"U_obs\", shape = circle]\n    Bprior [label = \"B_prior\", shape = circle]\n    Lgross [label = \"L_gross\", shape = circle]\n    Lnet  [label = \"L_net\", shape = circle]\n    Lb  [label =\"L_b\", shape = circle]\n    Bobs  [label = \"B_obs\", shape = circle]\n    Bpost [label = \"B_post\", shape = circle]\n    Wt  [label = \"W_t\", shape = circle]\n    Upost [label = \"U_post\", shape = circle]\n    \n\n    Lt -> Lgross\n    Gt -> Lgross\n    At -> Lnet\n    Uobs -> Bobs\n    Lgross -> Bpost\n    Lnet -> Bpost\n    Bobs -> Lb\n    Lb -> Bpost\n    Bprior -> Bpost\n    Uobs -> Upost\n    Bpost -> Upost\n    Wt -> Upost\n  }\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+</section>
+<section id="results" class="level1">
+<h1>Results</h1>
+<p><strong>MCMC result:</strong> Although not shown, the authors ran several convergence diagnostics and mentioned that the MCMC converged, providing a reasonable estimate of the posterior distribution of B.</p>
+<p><img src="bayesian_final_project_files/figures/fig_5.png" class="img-fluid" alt="Prior, observations, and posterior result of B distribution"> Figure 5 reveals diverse patterns in how the posterior distribution results differ across changes in <span class="math inline">\(\beta_{ij}\)</span>, compared with the prior distribution. For example, from visual judgement, there’s difference between the prior and posterior distribution in changes to urban land use compared to other change trajectories. <strong>These significant differences suggest that the model learned considerably from the data, while minimal differences indicate a stronger reliance on prior information.</strong></p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Gains</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Loss</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="bayesian_final_project_files/figures/fig_6.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Gains</figcaption>
+</figure>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="bayesian_final_project_files/figures/fig_7.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Loss</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
